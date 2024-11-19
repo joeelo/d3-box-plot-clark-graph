@@ -1,11 +1,10 @@
 import "./style.css"
 
-// const dataBox = document.getElementById("data-set")!
-// let str = ""
 import * as d3 from "d3"
 const inputData = [1, 22, 10, 12, 4, 19, 47]
 const inputData2 = [22, 27, 45, 17, 14, 99, 57]
 const outliers = [2, 5, 6, 7, 37, 39, 43, 47, 1]
+const outliers2 = [14, 22, 80, 99, 89, 77, 92]
 
 enum Margin {
   Top = 10,
@@ -82,16 +81,14 @@ function update() {
     .attr("y1", newYScale(min))
     .attr("y2", newYScale(max))
 
-  // svg
-  //   .selectAll("line")
-  //   .data([min, median, max])
-  //   .style("fill", "green")
-  //   .attr("y1", function (d) {
-  //     return newYScale(d)
-  //   })
-  //   .attr("y2", function (d) {
-  //     return newYScale(d)
-  //   })
+  d3.selectAll(".outlier-circles")
+    .data(outliers2)
+    .join(".outlier-circles")
+    .transition()
+    .duration(3000)
+    .attr("cy", function (d) {
+      return newYScale(d)
+    })
 }
 
 button.addEventListener("click", () => {
@@ -159,26 +156,52 @@ async function generateGraph(data: any) {
     .attr("stroke", "black")
 
   // create a tooltip
-  var tooltip = d3
+  const graphTooltip = d3
     .select("#data-set")
     .append("div")
     .style("opacity", 0)
     .attr("class", "tooltip")
     .style("font-size", "16px")
+
   // Three function that change the tooltip when user hover / move / leave a cell
   // Tooltip code from d3 example - https://d3-graph-gallery.com/graph/boxplot_horizontal.html
-  var mouseover = function (x: number, y: number) {
-    tooltip.transition().duration(200).style("opacity", 1)
-    tooltip
+  const graphMouseover = function (x: number, y: number) {
+    graphTooltip.transition().duration(200).style("opacity", 1)
+    graphTooltip
       .html(`<span style='color:grey'>median: ${median} </span>`) // + d.Prior_disorder + "<br>" + "HR: " +  d.HR)
       .style("left", x + 30 + "px")
       .style("top", y + 30 + "px")
   }
-  var mouseleave = function () {
-    tooltip.transition().duration(200).style("opacity", 0)
+  const graphMouseleave = function () {
+    graphTooltip.transition().duration(200).style("opacity", 0)
   }
-  var mousemove = function (x: number, y: number) {
-    tooltip.style("left", x + 30 + "px").style("top", y + 30 + "px")
+  const graphMousemove = function (x: number, y: number) {
+    graphTooltip.style("left", x + 30 + "px").style("top", y + 30 + "px")
+  }
+
+  // create a tooltip
+  const circleTooltip = d3
+    .select("#data-set")
+    .append("div")
+    .style("opacity", 0)
+    .attr("background-color", "blue")
+    .attr("class", "tooltip")
+    .style("font-size", "16px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  // Tooltip code from d3 example - https://d3-graph-gallery.com/graph/boxplot_horizontal.html
+  const circleMouseover = function (x: number, y: number, data: number) {
+    circleTooltip.transition().duration(200).style("opacity", 1)
+    circleTooltip
+      .html(`<span style='color:green'>outlier value: ${data} </span>`)
+      .style("left", x + 30 + "px")
+      .style("top", y + 30 + "px")
+  }
+  const circleMouseleave = function () {
+    circleTooltip.transition().duration(200).style("opacity", 0)
+  }
+  const circleMousemove = function (x: number, y: number) {
+    circleTooltip.style("left", x + 30 + "px").style("top", y + 30 + "px")
   }
 
   // show the box
@@ -190,7 +213,7 @@ async function generateGraph(data: any) {
     .attr("width", width)
     .attr("stroke", "black")
     .attr("fill", "#69b3a2")
-    .on("mouseenter", function (evt) {
+    .on("mouseover", function (evt) {
       // https://stackoverflow.com/questions/20002625/darken-rect-circle-on-mouseover-in-d3
       // @ts-ignore
       d3.select(this).style("fill", function () {
@@ -199,19 +222,19 @@ async function generateGraph(data: any) {
 
       const [mx, my] = d3.pointer(evt)
 
-      mouseover(mx, my)
+      graphMouseover(mx, my)
     })
     .on("mouseleave", function () {
       // @ts-ignore
       d3.select(this).style("fill", function () {
         return d3.rgb(d3.select(this).style("fill")).brighter(0.2)
       })
-      mouseleave()
+      graphMouseleave()
     })
     .on("mousemove", function (evt) {
       const [mx, my] = d3.pointer(evt)
 
-      mousemove(mx, my)
+      graphMousemove(mx, my)
     })
 
   svg
@@ -230,6 +253,7 @@ async function generateGraph(data: any) {
       return yScale(d)
     })
     .attr("stroke", "blue")
+    .attr("pointer-events", "none")
 
   const inferno = d3
     .scaleSequential()
@@ -237,20 +261,43 @@ async function generateGraph(data: any) {
     .domain([0, max + 5])
 
   svg
-    .selectAll("d")
+    .selectAll("circle")
     .data(outliers)
     .enter()
     .append("circle")
-    .attr("class", "outlier-circle")
+    .attr("class", "outlier-circles")
     .attr("cx", function () {
       return center
     })
     .attr("cy", function (d) {
       return yScale(d)
     })
-    .attr("r", 4)
+    .attr("r", 7)
     .style("fill", function (d) {
       return inferno(d)
     })
     .attr("stroke", "black")
+    .on("mouseenter", function (evt, d) {
+      // https://stackoverflow.com/questions/20002625/darken-rect-circle-on-mouseover-in-d3
+      // @ts-ignore
+      d3.select(this).style("fill", function () {
+        return d3.rgb(d3.select(this).style("fill")).darker(0.4)
+      })
+
+      const [mx, my] = d3.pointer(evt)
+
+      circleMouseover(mx, my, d)
+    })
+    .on("mouseleave", function () {
+      // @ts-ignore
+      d3.select(this).style("fill", function () {
+        return d3.rgb(d3.select(this).style("fill")).brighter(0.4)
+      })
+      circleMouseleave()
+    })
+    .on("mousemove", function (evt) {
+      const [mx, my] = d3.pointer(evt)
+
+      circleMousemove(mx, my)
+    })
 }
