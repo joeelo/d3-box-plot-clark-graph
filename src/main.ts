@@ -1,10 +1,9 @@
+import { StatsResponse } from "./StatsResponse"
 import "./style.css"
 
 import * as d3 from "d3"
 const inputData = [1, 22, 10, 12, 4, 19, 47]
-const inputData2 = [22, 27, 45, 17, 14, 99, 57]
 const outliers = [2, 5, 6, 7, 37, 39, 43, 47, 1]
-const outliers2 = [14, 22, 80, 99, 89, 77, 92]
 
 enum Margin {
   Top = 10,
@@ -17,6 +16,20 @@ let height = 600 - Margin.Top - Margin.Bottom
 let width = 600 - Margin.Left + Margin.Right
 const center = 200
 
+// https://stackoverflow.com/questions/54820096/detect-fetch-api-request-on-web-page-in-javascript
+const observer = new PerformanceObserver((list) => {
+  for (const entry of list.getEntries()) {
+    // @ts-expect-error initiator type is not on performanceObserver
+    if (entry.initiatorType === "fetch") {
+      console.log("Fetch request detected to", entry.name)
+    }
+  }
+})
+
+observer.observe({
+  entryTypes: ["resource"]
+})
+
 const button = document.getElementById("generate-button")!
 
 const svg = d3
@@ -27,18 +40,14 @@ const svg = d3
   .append("g")
   .attr("transform", `translate(${Margin.Left}, ${Margin.Top})`)
 
-function update() {
-  const data2Sorted = inputData2.sort((a, b) => a - b)
+function update(data: number[], newOutliers: number[]) {
+  const sortedData = data.sort((a, b) => a - b)
 
-  console.log(data2Sorted)
-
-  const q1 = d3.quantile(data2Sorted, 0.25) || 0
-  const median = d3.quantile(data2Sorted, 0.5) as d3.NumberValue
-  const q3 = d3.quantile(data2Sorted, 0.75) || 0
-  const min = data2Sorted[0] as d3.NumberValue
-  const max = data2Sorted[data2Sorted.length - 1] as d3.NumberValue
-
-  console.log(q3)
+  const q1 = d3.quantile(sortedData, 0.25) || 0
+  const median = d3.quantile(sortedData, 0.5) || 0
+  const q3 = d3.quantile(sortedData, 0.75) || 0
+  const min = sortedData[0] as d3.NumberValue
+  const max = sortedData[sortedData.length - 1]
 
   const newYScale = d3
     .scaleLinear()
@@ -48,7 +57,7 @@ function update() {
   // Transition docs - https://www.d3indepth.com/transitions/
   d3.select("svg")
     .selectAll("rect")
-    .data(data2Sorted)
+    .data(sortedData)
     .join("rect")
     .transition()
     .duration(2000)
@@ -57,17 +66,19 @@ function update() {
 
   const newYAxis = d3.axisLeft(newYScale)
 
-  svg.select("#y-axis").transition().duration(2000).call(newYAxis)
+  svg
+    .select("#y-axis")
+    .transition()
+    .duration(2000)
+    .call(newYAxis as any)
 
   d3.select("svg")
     .selectAll(".min-max-lines")
     .data([min, median, max])
     .join(".min-max-lines")
     .transition()
-    .duration(5000)
+    .duration(3000)
     .attr("y1", function (d) {
-      console.log(d)
-
       return newYScale(d)
     })
     .attr("y2", function (d) {
@@ -77,45 +88,105 @@ function update() {
   d3.select("svg")
     .select("#vertical-line")
     .transition()
-    .duration(5000)
+    .duration(3000)
     .attr("y1", newYScale(min))
     .attr("y2", newYScale(max))
 
-  d3.selectAll(".outlier-circles")
-    .data(outliers2)
-    .join(".outlier-circles")
+  const inferno = d3
+    .scaleSequential()
+    .interpolator(d3.interpolateInferno)
+    .domain([0, max + 20])
+
+  // Ineserting new values https://www.createwithdata.com/enter-exit-with-d3-join/
+  d3.select("#data-set")
+    .selectAll("circle")
+    .data(newOutliers)
+    .join(
+      function (enter) {
+        return enter
+          .append("circle")
+          .style("opacity", 0)
+          .attr("cx", center)
+          .attr("cy", function (d) {
+            return newYScale(d)
+          })
+      },
+      function (update) {
+        return update
+      },
+      function (exit) {
+        return exit
+          .transition()
+          .duration(5000)
+          .attr("r", 0)
+          .style("opacity", 0)
+          .attr("cx", 1000)
+          .on("end", function () {
+            d3.select(this).remove()
+          })
+      }
+    )
+    .attr("cx", function () {
+      return center
+    })
+    .attr("cy", function (d) {
+      return 0
+    })
     .transition()
-    .duration(3000)
+    .duration(5000)
+    .attr("r", function () {
+      return 5
+    })
     .attr("cy", function (d) {
       return newYScale(d)
     })
+    .style("opacity", 1)
 }
 
-button.addEventListener("click", () => {
-  console.log("clicked")
-  update()
+button.addEventListener("click", async () => {
+  const newValues = await getData()
+
+  console.log(newValues.data.outliers)
+
+  await update(newValues.dataSet, newValues.data.outliers)
 })
 
 async function getData() {
   // Make this dynamic
 
+  const randomData = []
+
+  for (let i = 0; i < 30; i++) {
+    randomData.push(Math.random() * 60)
+  }
+
+  for (let i = 0; i < 5; i++) {
+    randomData.push(Math.random() * 10 * 10)
+  }
+
+  for (let i = 0; i < 5; i++) {
+    randomData.push(Math.random() * 20 * 10)
+  }
+
   const response = await fetch("http://localhost:8000/calculate-stats", {
     method: "POST",
     body: JSON.stringify({
-      data_input: inputData
+      data_input: randomData
     }),
     mode: "cors",
     headers: {
       "Content-Type": "application/json"
     }
   })
-  const data = await response.json()
-  // console.log(data)
-
-  await generateGraph(inputData)
+  const data = (await response.json()) as StatsResponse
+  return {
+    dataSet: randomData,
+    data
+  }
 }
 
-getData()
+generateGraph(inputData)
+// getData()
 
 async function generateGraph(data: any) {
   // https://d3-graph-gallery.com/graph/boxplot_basic.html
@@ -266,13 +337,14 @@ async function generateGraph(data: any) {
     .enter()
     .append("circle")
     .attr("class", "outlier-circles")
+    .attr("z-index", "5")
     .attr("cx", function () {
       return center
     })
     .attr("cy", function (d) {
       return yScale(d)
     })
-    .attr("r", 7)
+    .attr("r", 5)
     .style("fill", function (d) {
       return inferno(d)
     })
@@ -284,9 +356,8 @@ async function generateGraph(data: any) {
         return d3.rgb(d3.select(this).style("fill")).darker(0.4)
       })
 
-      const [mx, my] = d3.pointer(evt)
-
-      circleMouseover(mx, my, d)
+      // const [mx, my] = d3.pointer(evt)
+      circleMouseover(evt.clientX, evt.clientY, d)
     })
     .on("mouseleave", function () {
       // @ts-ignore
@@ -296,8 +367,6 @@ async function generateGraph(data: any) {
       circleMouseleave()
     })
     .on("mousemove", function (evt) {
-      const [mx, my] = d3.pointer(evt)
-
-      circleMousemove(mx, my)
+      circleMousemove(evt.clientX, evt.clientY)
     })
 }
