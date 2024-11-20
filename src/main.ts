@@ -3,7 +3,7 @@ import "./style.css"
 
 import * as d3 from "d3"
 const inputData = [1, 22, 10, 12, 4, 19, 47]
-const outliers = [2, 5, 6, 7, 37, 39, 43, 47, 1]
+const outliers = [1]
 
 enum Margin {
   Top = 10,
@@ -51,7 +51,7 @@ function update(data: number[], newOutliers: number[]) {
 
   const newYScale = d3
     .scaleLinear()
-    .domain([0, max + 5])
+    .domain([0, max + 10])
     .range([height, 0])
 
   // Transition docs - https://www.d3indepth.com/transitions/
@@ -97,17 +97,60 @@ function update(data: number[], newOutliers: number[]) {
     .interpolator(d3.interpolateInferno)
     .domain([0, max + 20])
 
-  // Ineserting new values https://www.createwithdata.com/enter-exit-with-d3-join/
-  d3.select("#data-set")
+  // Inserting new values https://www.createwithdata.com/enter-exit-with-d3-join/
+  // d3.select("#data-set")
+  //   .selectAll("circle")
+  //   .data(newOutliers)
+  //   .join(
+  //     function (enter) {
+  //       return enter
+  //         .append("circle")
+  //         .style("opacity", 0)
+  //         .attr("cx", center)
+  //         .attr("cy", function (d) {
+  //           return max
+  //         })
+  //     },
+  //     function (update) {
+  //       return update
+  //     },
+  //     function (exit) {
+  //       return exit
+  //         .transition()
+  //         .duration(5000)
+  //         .attr("r", 0)
+  //         .style("opacity", 0)
+  //         .attr("cx", 1000)
+  //         .on("end", function () {
+  //           d3.select(this).remove()
+  //         })
+  //     }
+  //   )
+  //   .attr("cx", function () {
+  //     return center
+  //   })
+  //   .transition()
+  //   .duration(5000)
+  //   .attr("r", function () {
+  //     return 5
+  //   })
+  //   .attr("cy", function (d) {
+  //     return newYScale(d)
+  //   })
+  //   .style("opacity", 1)
+
+  svg
     .selectAll("circle")
     .data(newOutliers)
     .join(
       function (enter) {
+        console.log("enter called")
+
         return enter
           .append("circle")
-          .style("opacity", 0)
           .attr("cx", center)
           .attr("cy", function (d) {
+            console.log(d)
             return newYScale(d)
           })
       },
@@ -116,10 +159,7 @@ function update(data: number[], newOutliers: number[]) {
       },
       function (exit) {
         return exit
-          .transition()
-          .duration(5000)
           .attr("r", 0)
-          .style("opacity", 0)
           .attr("cx", 1000)
           .on("end", function () {
             d3.select(this).remove()
@@ -129,24 +169,38 @@ function update(data: number[], newOutliers: number[]) {
     .attr("cx", function () {
       return center
     })
-    .attr("cy", function (d) {
-      return 0
-    })
-    .transition()
-    .duration(5000)
+    // .transition()
+    // .duration(5000)
     .attr("r", function () {
       return 5
     })
     .attr("cy", function (d) {
       return newYScale(d)
     })
-    .style("opacity", 1)
+
+  // d3.select("#data-set")
+  //   .selectAll("circle")
+  //   .data(newOutliers)
+  //   .enter()
+  //   .append("circle")
+  //   .attr("r", 10)
+  //   .style("fill", function (d) {
+  //     return "black"
+  //   })
+  //   .attr("stroke", "black")
+  //   // .transition()
+  //   .attr("cx", function () {
+  //     return center
+  //   })
+  //   .attr("cy", function (d) {
+  //     return newYScale(d)
+  //   })
 }
 
 button.addEventListener("click", async () => {
   const newValues = await getData()
 
-  console.log(newValues.data.outliers)
+  console.log("new outliers ", newValues.data.outliers)
 
   await update(newValues.dataSet, newValues.data.outliers)
 })
