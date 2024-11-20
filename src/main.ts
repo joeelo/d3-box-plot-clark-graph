@@ -98,68 +98,29 @@ function update(data: number[], newOutliers: number[]) {
     .domain([0, max + 20])
 
   // Inserting new values https://www.createwithdata.com/enter-exit-with-d3-join/
-  // d3.select("#data-set")
-  //   .selectAll("circle")
-  //   .data(newOutliers)
-  //   .join(
-  //     function (enter) {
-  //       return enter
-  //         .append("circle")
-  //         .style("opacity", 0)
-  //         .attr("cx", center)
-  //         .attr("cy", function (d) {
-  //           return max
-  //         })
-  //     },
-  //     function (update) {
-  //       return update
-  //     },
-  //     function (exit) {
-  //       return exit
-  //         .transition()
-  //         .duration(5000)
-  //         .attr("r", 0)
-  //         .style("opacity", 0)
-  //         .attr("cx", 1000)
-  //         .on("end", function () {
-  //           d3.select(this).remove()
-  //         })
-  //     }
-  //   )
-  //   .attr("cx", function () {
-  //     return center
-  //   })
-  //   .transition()
-  //   .duration(5000)
-  //   .attr("r", function () {
-  //     return 5
-  //   })
-  //   .attr("cy", function (d) {
-  //     return newYScale(d)
-  //   })
-  //   .style("opacity", 1)
-
   svg
     .selectAll("circle")
     .data(newOutliers)
     .join(
       function (enter) {
-        console.log("enter called")
-
         return enter
           .append("circle")
+          .style("opacity", 0)
           .attr("cx", center)
           .attr("cy", function (d) {
-            console.log(d)
-            return newYScale(d)
+            return max
           })
+          .attr("fill", "white")
       },
       function (update) {
         return update
       },
       function (exit) {
         return exit
+          .transition()
+          .duration(5000)
           .attr("r", 0)
+          .style("opacity", 0)
           .attr("cx", 1000)
           .on("end", function () {
             d3.select(this).remove()
@@ -169,32 +130,19 @@ function update(data: number[], newOutliers: number[]) {
     .attr("cx", function () {
       return center
     })
-    // .transition()
-    // .duration(5000)
+    .transition()
+    .duration(5000)
     .attr("r", function () {
       return 5
     })
     .attr("cy", function (d) {
       return newYScale(d)
     })
-
-  // d3.select("#data-set")
-  //   .selectAll("circle")
-  //   .data(newOutliers)
-  //   .enter()
-  //   .append("circle")
-  //   .attr("r", 10)
-  //   .style("fill", function (d) {
-  //     return "black"
-  //   })
-  //   .attr("stroke", "black")
-  //   // .transition()
-  //   .attr("cx", function () {
-  //     return center
-  //   })
-  //   .attr("cy", function (d) {
-  //     return newYScale(d)
-  //   })
+    .style("stroke", "black")
+    .style("fill", function (d) {
+      return inferno(d)
+    })
+    .style("opacity", 1)
 }
 
 button.addEventListener("click", async () => {
@@ -274,6 +222,7 @@ async function generateGraph(data: any) {
   svg
     .append("line")
     .attr("id", "vertical-line")
+    .attr("class", "main-vert-line")
     .attr("x1", center)
     .attr("x2", center)
     .attr("y1", yScale(min))
@@ -296,9 +245,21 @@ async function generateGraph(data: any) {
       .html(`<span style='color:grey'>median: ${median} </span>`) // + d.Prior_disorder + "<br>" + "HR: " +  d.HR)
       .style("left", x + 30 + "px")
       .style("top", y + 30 + "px")
+
+    const rect = d3.selectAll("rect")
+    const lines = d3.selectAll(".min-max-lines,#vertical-line")
+
+    rect.attr("stroke-width", 3)
+    lines.attr("stroke-width", 4)
   }
   const graphMouseleave = function () {
     graphTooltip.transition().duration(200).style("opacity", 0)
+
+    const rect = d3.selectAll("rect")
+    const lines = d3.selectAll(".min-max-lines,#vertical-line")
+
+    rect.attr("stroke-width", 1)
+    lines.attr("stroke-width", 1)
   }
   const graphMousemove = function (x: number, y: number) {
     graphTooltip.style("left", x + 30 + "px").style("top", y + 30 + "px")
@@ -349,17 +310,17 @@ async function generateGraph(data: any) {
 
       graphMouseover(mx, my)
     })
+    .on("mousemove", function (evt) {
+      const [mx, my] = d3.pointer(evt)
+
+      graphMousemove(mx, my)
+    })
     .on("mouseleave", function () {
       // @ts-ignore
       d3.select(this).style("fill", function () {
         return d3.rgb(d3.select(this).style("fill")).brighter(0.2)
       })
       graphMouseleave()
-    })
-    .on("mousemove", function (evt) {
-      const [mx, my] = d3.pointer(evt)
-
-      graphMousemove(mx, my)
     })
 
   svg
@@ -377,7 +338,7 @@ async function generateGraph(data: any) {
     .attr("y2", function (d) {
       return yScale(d)
     })
-    .attr("stroke", "blue")
+    .attr("stroke", "black")
     .attr("pointer-events", "none")
 
   const inferno = d3
