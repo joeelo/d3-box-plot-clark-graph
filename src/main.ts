@@ -125,6 +125,18 @@ function update({
 
       graphMouseover(mx, my, { min, max, q3, q1, median, iqr })
     })
+    .on("mousemove", function (evt) {
+      const [mx, my] = d3.pointer(evt)
+
+      graphMousemove(mx, my)
+    })
+    .on("mouseleave", function () {
+      // @ts-ignore
+      d3.select(this).style("fill", function () {
+        return d3.rgb(d3.select(this).style("fill")).brighter(0.2)
+      })
+      graphMouseleave()
+    })
     .data(sortedData)
     .join("rect")
     .transition()
@@ -219,7 +231,7 @@ button.addEventListener("click", async () => {
   const newData = textArea.value
     .split(", ")
     .filter((num) => {
-      return Number(num)
+      return Number(num) || Number(num) === 0
     })
     .map((num) => Number(num))
 
@@ -325,18 +337,6 @@ async function generateGraph(data: any) {
     .attr("width", width)
     .attr("stroke", "black")
     .attr("fill", "#69b3a2")
-    .on("mousemove", function (evt) {
-      const [mx, my] = d3.pointer(evt)
-
-      graphMousemove(mx, my)
-    })
-    .on("mouseleave", function () {
-      // @ts-ignore
-      d3.select(this).style("fill", function () {
-        return d3.rgb(d3.select(this).style("fill")).brighter(0.2)
-      })
-      graphMouseleave()
-    })
 
   svg
     .selectAll("d")

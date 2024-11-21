@@ -44,17 +44,51 @@ h1, h2, h3, h4 {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 
 #generate-button {
   margin-top: 50px; 
   padding: 10; 
   width: 200px; 
-  border: 1px solid black; 
+  border: none; 
+  outline: none;
   cursor: pointer;
   margin-bottom: 20px; 
-  padding: 10px; 
+  padding: 20px; 
   text-align: center;
+  border-radius: 6px;
+  background-color: #0a87ff;
+  filter: drop-shadow(0, 0 15px, rgba(0, 0, 0, 0.5));
+  color: white;
+  position: relative;
+}
+
+.spark {
+  position: absolute;
+  width: 20px; 
+  border-radius: 50%;
+  height: 20px;
+  top: 70px;
+  pointer-events: none;
+  background: #0a87ff;
+  z-index: -1; 
+  animation: animate 2s linear forwards;
+}
+.spark:nth-child(even) {
+  background: transparent;
+  border: 1px solid blue;
+}
+
+@keyframes animate {
+  0% {
+    opacity: 1; 
+    transform: translate(0,0);
+  }
+  100% {
+    opacity: 0; 
+    transform: translate(var(--x), var(--y));
+  }
 }
 
 textarea {
@@ -62,35 +96,10 @@ textarea {
   padding: 15px;
   min-height: 50px;
   width: 400px;
+  margin-bottom: 20px; 
 }
 
+.mb {
+  margin-bottom: 10px;
+}
 
-/* button examples from https://github.com/enjeck/btns/blob/main/src/styles.css */
-/* Fill center */
-.btn-fill-center {
-	text-align: center;
-	cursor:pointer;
-	text-transform:uppercase;
-	font-weight:bold;
-	transition: all .5s ease-in;
-}
-.btn-fill-center-text {
-	display: block;
-	max-width: 160px;
-	text-decoration: none;
-	border-radius: 4px;
-	padding: 13px 50px;
-	-webkit-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	-moz-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	-ms-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	-o-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-	transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
-}
-.btn-fill-center-text--gray {
-	color: #333;
-	border: 2px solid #333;
-}
-.btn-fill-center-text--gray:hover {
-	color: #fff;
-	box-shadow: #333 0 0px 0px 40px inset;
-}
