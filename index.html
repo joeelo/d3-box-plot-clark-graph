@@ -7,6 +7,8 @@
     <title>Vite + TS</title>
   </head>
   <body>
+    <h1 class="title">CLARK BOX PLOT</h1>
+
     <div id="#container">
       <div class="tooltip"></div>
       <div id="data-set"></div>
@@ -14,9 +16,16 @@
     <div id="app"></div>
 
     <!-- Create a div where the graph will take place -->
-    <div id="generate-button">
-      generate
+    <div id="generate-container">
+      <div id="generate-button">
+        Calculate
+      </div>
+
+      <span>Input numbers with a comma separating each one ie: 1, 5, 8.0, 9.1, 4.8</span>
+
+      <textarea id="number-input"></textarea>
     </div>
+
 
     <script type="module" src="/src/main.ts"></script>
   </body>

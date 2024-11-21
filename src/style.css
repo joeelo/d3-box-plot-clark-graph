@@ -1,31 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
 body, *, html {
   margin: 0; 
   padding: 0; 
   box-sizing: content-box;
+  font-family: "Public Sans", serif;
 }
 
-/* .tooltip {
-  font: sans-serif 12pt;
-  background: #eeeeeeee;
-  pointer-events: none;
-  border-radius: 2px;
-  padding: 5px;
-  position: absolute;
-  top: 0px;
-  left: 200px;
-  z-index: 100;
-} */
+body {
+  min-width: 100vw;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Raleway", sans-serif;
+}
+
+.title {
+  text-align: center;
+  font-size: 48px; 
+  margin-top: 20px; 
+  margin-bottom: 20px;
+}
 
 .tooltip {
-  background-color: black;
+  background-color: white;
   border: none;
   border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.1);
   padding: 15px;
   min-width: 400px;
   text-align: left;
   color: white;
   opacity: 0;
   position: absolute;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+#generate-container {
+  width: 100%; 
+  display: flex; 
+  margin-top: 20px; 
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }
 
 #generate-button {
@@ -34,4 +52,45 @@ body, *, html {
   width: 200px; 
   border: 1px solid black; 
   cursor: pointer;
+  margin-bottom: 20px; 
+  padding: 10px; 
+  text-align: center;
+}
+
+textarea {
+  resize: none;
+  padding: 15px;
+  min-height: 50px;
+  width: 400px;
+}
+
+
+/* button examples from https://github.com/enjeck/btns/blob/main/src/styles.css */
+/* Fill center */
+.btn-fill-center {
+	text-align: center;
+	cursor:pointer;
+	text-transform:uppercase;
+	font-weight:bold;
+	transition: all .5s ease-in;
+}
+.btn-fill-center-text {
+	display: block;
+	max-width: 160px;
+	text-decoration: none;
+	border-radius: 4px;
+	padding: 13px 50px;
+	-webkit-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+	-moz-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+	-ms-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+	-o-transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+	transition: all 800ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+}
+.btn-fill-center-text--gray {
+	color: #333;
+	border: 2px solid #333;
+}
+.btn-fill-center-text--gray:hover {
+	color: #fff;
+	box-shadow: #333 0 0px 0px 40px inset;
 }
