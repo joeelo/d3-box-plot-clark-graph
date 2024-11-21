@@ -12,6 +12,8 @@ enum Margin {
   Left = 40
 }
 
+// https://d3-graph-gallery.com/graph/boxplot_basic.html
+// dimension and margin for graph
 let height = 600 - Margin.Top - Margin.Bottom
 let width = 600 - Margin.Left + Margin.Right
 const center = 200
@@ -265,17 +267,13 @@ async function getData(nums = [] as number[]) {
 }
 
 async function generateGraph(data: any) {
-  // https://d3-graph-gallery.com/graph/boxplot_basic.html
-  // dimension and margin for graph
-
-  // appen svg object to the page
+  // append svg object to the page
   const dataSorted = data.sort(d3.ascending)
 
-  // TODO: Replace this with API stuff after typing it out.
   const q1 = d3.quantile(dataSorted, 0.25) || 0
   const median = d3.quantile(dataSorted, 0.5)
   const q3 = d3.quantile(dataSorted, 0.75) || 0
-  const interQuantileRange = q3 - q1
+  // const interQuantileRange = q3 - q1
   const min = dataSorted[0]
   const max = dataSorted[dataSorted.length - 1]
 
