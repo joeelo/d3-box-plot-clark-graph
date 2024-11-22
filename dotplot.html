@@ -8,6 +8,17 @@
 </head>
 <body>
   <div id="dot-plot"></div>
+  <!-- Create a div where the graph will take place -->
+  <div id="generate-container">
+    <div id="generate-button">
+      Calculate
+    </div>
+
+    <span class="mb">Input numbers with a comma separating each one ie: 1, 5, 8.0, 9.1, 4.8</span>
+
+    <textarea id="number-input"></textarea>
+  </div>
   <script type="module" src="src/dotplot.ts"></script>
+  <script type="module" src="src/buttonEffect.ts"></script>
 </body>
 </html>
