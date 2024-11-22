@@ -55,7 +55,7 @@ h1, h2, h3, h4 {
   outline: none;
   cursor: pointer;
   margin-bottom: 20px; 
-  padding: 20px; 
+  padding: 30px 20px; 
   text-align: center;
   border-radius: 6px;
   filter: drop-shadow(0, 0 15px, rgba(0, 0, 0, 0.5));
@@ -63,10 +63,10 @@ h1, h2, h3, h4 {
   position: relative;
   transition: 0.5s ease all;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
-  background-color: #1267b6;
+  background-color: #ffb91d;
 }
 #generate-button:hover {
-  background-color: #0a87ff;
+  background-color: #d09618;
   box-shadow: none;
 }
 
@@ -77,13 +77,13 @@ h1, h2, h3, h4 {
   height: 20px;
   top: 70px;
   pointer-events: none;
-  background: #0a87ff;
+  background: #ffb91d;
   z-index: -1; 
   animation: animate 2s linear forwards;
 }
 .spark:nth-child(even) {
   background: transparent;
-  border: 1px solid blue;
+  border: 1px solid #ffb91d;
 }
 
 @keyframes animate {
