@@ -87,7 +87,7 @@ function drawChart(values: GraphData[]) {
 
   // Update the X scale and Axis (here the 20 is just to have a bit of margin)
   x.range([20, currentWidth - 20])
-  x.domain([0, values[values.length - 1].val + 10])
+  x.domain([0, values[values.length - 1].val + 2])
   xAxis.call(d3.axisBottom(x))
 
   console.log(values)
