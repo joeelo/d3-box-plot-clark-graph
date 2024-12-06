@@ -3,7 +3,7 @@ export interface StatsResponse {
   max: number
   range: number
   mean: number
-  mode: number
+  mode: number[]
   q1: number
   median: number
   q3: number

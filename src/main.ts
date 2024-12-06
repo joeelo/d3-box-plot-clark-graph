@@ -131,7 +131,35 @@ function update({
 
   console.log({ apiData })
 
-  const { q1, q3, median, max, min } = apiData
+  const { q1, q3, median, max, min, mean, mode, range, iqr, outliers } = apiData
+
+  const meanNode = document.getElementById("mean-label")!
+  const medianNode = document.getElementById("median-label")!
+  const modeNode = document.getElementById("mode-label")!
+  const rangeNode = document.getElementById("range-label")!
+  const iqrNode = document.getElementById("iqr-label")!
+  const summaryNode = document.getElementById("summary-values")!
+  const outliersNode = document.getElementById("outliers-values")!
+
+  meanNode.innerHTML = `MEAN = <span style="color:green;">${mean.toFixed(
+    2
+  )}<span>`
+  medianNode.innerHTML = `MEDIAN = <span style="color:green;">${median.toFixed(
+    2
+  )}</span>`
+  modeNode.innerHTML = `MODE = <span style="color:green;">${mode.join(
+    ", "
+  )}</span>`
+  rangeNode.innerHTML = `RANGE = <span style="color:green;">${range.toFixed(
+    2
+  )}</span>`
+  iqrNode.innerHTML = `IQR = <span style="color:green;">${iqr.toFixed(
+    2
+  )}</span>`
+  summaryNode.innerHTML = `<span style="color:green;">${min}, ${q1}, ${median}, ${q3}, ${max}</span>`
+  outliersNode.innerHTML = `<span style="color:green;">${outliers.join(
+    ", "
+  )}</span>`
 
   const newYScale = d3
     .scaleLinear()

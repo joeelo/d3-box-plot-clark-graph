@@ -112,3 +112,12 @@ textarea {
 .p-3 {
   padding: 24px;
 }
+
+h2 {
+  margin-bottom: 10px;
+}
+
+h3 {
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
