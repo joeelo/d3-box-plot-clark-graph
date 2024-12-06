@@ -75,6 +75,8 @@ function drawChart(values: GraphData[]) {
           .append("circle")
           .attr("opacity", 0)
           .style("fill", "#9663C4")
+          .attr("stroke-width", 1)
+          .attr("stroke", "black")
           .attr("r", 7)
           .attr("cy", function (d) {
             return height - 20 * d.instanceOfValue
@@ -106,13 +108,14 @@ function drawChart(values: GraphData[]) {
     )
     .transition()
     .duration(3000)
-    .attr("opacity", 0.5)
+    .attr("opacity", 1)
 }
 
 // Initialize the chart
 drawChart(updatedValues)
 
 // Add an event listener that run the function when dimension change
+// TOOD: Add a debounce function to this
 window.addEventListener("resize", () => {
   drawChart(updatedValues)
 })
