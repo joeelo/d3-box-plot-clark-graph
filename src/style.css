@@ -70,22 +70,6 @@ h1, h2, h3, h4 {
   box-shadow: none;
 }
 
-.spark {
-  position: absolute;
-  width: 20px; 
-  border-radius: 50%;
-  height: 20px;
-  top: 70px;
-  pointer-events: none;
-  background: #ffb91d;
-  z-index: -1; 
-  animation: animate 2s linear forwards;
-}
-.spark:nth-child(even) {
-  background: transparent;
-  border: 1px solid #ffb91d;
-}
-
 @keyframes animate {
   0% {
     opacity: 1; 
@@ -120,4 +104,22 @@ h2 {
 h3 {
   margin-top: -10px;
   margin-bottom: 10px;
+}
+
+
+/************* Spark for button effect on click  ************/
+.spark {
+  position: absolute;
+  width: 20px; 
+  border-radius: 50%;
+  height: 20px;
+  top: 70px;
+  pointer-events: none;
+  background: #ffb91d;
+  z-index: -1; 
+  animation: animate 2s linear forwards;
+}
+.spark:nth-child(even) {
+  background: transparent;
+  border: 1px solid #ffb91d;
 }
