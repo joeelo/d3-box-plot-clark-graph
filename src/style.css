@@ -123,3 +123,9 @@ h3 {
   background: transparent;
   border: 1px solid #ffb91d;
 }
+
+#error-message {
+  color: red;
+  font-size: 12px;
+  display: none;
+}

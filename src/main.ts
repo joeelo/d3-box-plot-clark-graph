@@ -1,4 +1,6 @@
 import { StatsResponse } from "./StatsResponse"
+// @ts-ignore
+import Toastify from "toastify-js"
 import "./style.css"
 
 import * as d3 from "d3"
@@ -305,14 +307,33 @@ function update({
 button.addEventListener("click", async () => {
   const textArea = document.getElementById("number-input") as HTMLInputElement
 
-  const newData = textArea.value
-    .split(", ")
-    .filter((num) => {
-      return Number(num) || Number(num) === 0
+  const newData = textArea.value.split(",")
+  const nonNumericCharacters = []
+
+  const filteredData = newData
+    .filter((char) => {
+      const isValid = Number(char) || (Number(char) === 0 && char.trim() !== "")
+      if (!isValid) {
+        nonNumericCharacters.push(char)
+      }
+      return isValid
     })
     .map((num) => Number(num))
 
-  const newValues = (await getData(newData)) as any
+  if (!filteredData.length || nonNumericCharacters.length > 0) {
+    textArea.style.border = "2px solid red"
+    const errorMessage = document.getElementById("error-message")!
+    errorMessage.style.display = "block"
+
+    setTimeout(() => {
+      textArea.style.border = ""
+      errorMessage.style.display = "none"
+    }, 5000)
+
+    return
+  }
+
+  const newValues = (await getData(filteredData)) as any
 
   console.log("new outliers ", newValues.data.outliers)
 
@@ -335,6 +356,7 @@ async function getData(nums = [] as number[]) {
     }
   })
   const data = (await response.json()) as StatsResponse
+
   return {
     dataSet: nums,
     data
